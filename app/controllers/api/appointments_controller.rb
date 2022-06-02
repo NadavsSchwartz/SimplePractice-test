@@ -1,5 +1,5 @@
 class Api::AppointmentsController < ApplicationController
-	has_scope :past, type: :boolean, using: %i[past], type: :hash
+	has_scope :past, type: :boolean
 
 	has_scope :page, type: :integer, using: %i[page], type: :hash
 	def index
