@@ -2,7 +2,6 @@
 
 class Appointment < ApplicationRecord
   
-  validates :name, uniqueness: true
   belongs_to :doctor
   belongs_to :patient
 
