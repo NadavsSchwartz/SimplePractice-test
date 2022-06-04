@@ -32,6 +32,6 @@ class GetAppointments
             end
         end
         
-        scoped.limit(length).offset(page.to_i * length.to_i) 
+        scoped.limit(length).offset((page.to_i) * length.to_i) 
     end
 end
