@@ -2,15 +2,10 @@
 
 module Api
   class AppointmentsController < ApplicationController
-    has_scope :past, type: :boolean
-    has_scope :page, type: :integer
-    has_scope :length, type: :integer
-    ActionController::Parameters.action_on_unpermitted_parameters = :raise
-    rescue_from ActionController::UnpermittedParameters, with: :render_unpermitted_params_response
+    around_action :raise_action_on_unpermitted_parameters, only: %i[index]
+
     def index
-      #get all params
-    
-      @appointments = ::GetAppointments.new(Appointment.all).call(get_appointments_params)
+      @appointments = ::GetAppointments.new(Appointment.all).call(find_appointments_params)
 
       # if @appointments is an error hash, return it
       if @appointments.is_a?(Hash)
@@ -21,24 +16,55 @@ module Api
     end
 
     def create
-      if @appointment = Appointment.create(appointment_params)
-        render json: @appointment
+      params = create_new_appointment_params
+      @patient_name = params[:patient][:name].to_s
+      @doctor_id = params[:doctor][:id].to_i
+      @start_time = params[:start_time]
+      @duration_in_minutes = params[:duration_in_minutes].to_i
+
+      # find patient by name and return error if not found
+      @patient = Patient.find_by(name: @patient_name)
+      render json: { message: 'Patient not found' }, status: :not_found and return if @patient.nil?
+
+      # find doctor by id and return error if not found
+      @doctor = Doctor.find_by(id: @doctor_id)
+      render json: { message: 'Doctor not found' }, status: :not_found and return if @doctor.nil?
+
+      # create new appointment
+      @new_appointment = Appointment.new(
+        start_time: @start_time,
+        duration_in_minutes: @duration_in_minutes,
+        patient: @patient,
+        doctor: @doctor
+      )
+
+      # if appointment is valid, and successfully saved, return successufully created appointment, else return error
+      if @new_appointment.valid? && @new_appointment.save
+
+        render json: @new_appointment, status: :created
       else
-        render json: @appointment.errors, status: :unprocessable_entity
+        render json: { message: @new_appointment.errors.full_messages.join(', ') }, status: :bad_request
       end
     end
 
     private
 
-    def get_appointments_params
+    # handle unpermitted parameters
+    def raise_action_on_unpermitted_parameters
+      ActionController::Parameters.action_on_unpermitted_parameters = :raise
+      yield
+    ensure
+      ActionController::Parameters.action_on_unpermitted_parameters = :log
+    end
+
+    # permit only certain params for find and filtering appointments
+    def find_appointments_params
       params.permit(:past, :page, :length)
     end
 
-    def appointment_params
-      params.require(:appointment).permit(:start_time, :duration_in_minutes, :patient_id, :doctor_id)
+    # permit only certain params for creating new appointment
+    def create_new_appointment_params
+      params.permit(:start_time, :duration_in_minutes, patient: [:name], doctor: [:id])
     end
-    def render_unpermitted_params_response
-      render json: { "Unpermitted Parameters": params.to_unsafe_h.except(:controller, :action, :past, :page, :length).keys }, status: :unprocessable_entity
-  end
   end
 end
