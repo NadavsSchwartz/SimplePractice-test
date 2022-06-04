@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :doctor do
-    name { "Dr. One" }
+    name { Faker::Name.unique.name }
   end
 end
