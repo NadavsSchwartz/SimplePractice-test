@@ -1,18 +1,33 @@
+# frozen_string_literal: true
+
 class Appointment < ApplicationRecord
-	belongs_to :doctor
-	belongs_to :patient
+  
+  validates :name, uniqueness: true
+  belongs_to :doctor
+  belongs_to :patient
 
-	# scope :past,
-	#       ->(past) {
-	# 		if past == '1'
-	# 			@past_appointments = where('start_time > ?', Time.now)
-	# 		else
-	# 			@past_appointments = where('start_time < ?', Time.now)
-	# 		end
-	# 		@past_appointments
-	#       }
-	scope :past, -> { where('start_time < ?', Time.now) }
-
-	scope :page,
-	      ->(page, length) { limit(length).offset(page.to_i * length.to_i) }
+  def self.join_tables_and_modify_response(appointments)
+    (
+      appointments
+        .joins(:patient, :doctor)
+        .select(
+          'appointments.*, patients.name as patient_name, patients.id as patient_id, doctors.name as doctor_name, doctors.id as doctor_id'
+        )
+        .map do |appointment|
+          {
+            id: appointment.id,
+            patient: {
+              name: appointment.patient_name
+            },
+            doctor: {
+              name: appointment.doctor_name,
+              id: appointment.doctor_id
+            },
+            created_at: appointment.created_at.iso8601,
+            start_time: appointment.start_time.iso8601,
+            duration_in_minutes: appointment.duration_in_minutes
+          }
+        end
+    )
+  end
 end
