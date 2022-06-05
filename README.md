@@ -107,6 +107,8 @@
  
  
  ## Notes:
-  - To ensure secure and stable API flow, I have implemented tests and validations for multiple edge cases on parameters and Inputs without any outside gems. Because It's critical to test APIs and handle invalid inputs and sanitization, Unauthorized access, Data leakage, etc.., to ensure data is represented correctly. although on a bigger scale application, with more parameters, inputs, and data flow, it's more efficient and stable to utilize open-source well-tested gems.
+  -  It's critical to test APIs and handle edge cases on parameters for invalid inputs, sanitization, unauthorized access, data leakage, Etc.
+To ensure a smooth flow of data and efficiency, we should utilize open-source well-tested gems.
+However, since I was asked not to utilize outside gems, I have implemented validations for multiple edge cases.
   
  
