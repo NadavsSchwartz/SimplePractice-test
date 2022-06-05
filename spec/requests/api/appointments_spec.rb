@@ -53,18 +53,6 @@ RSpec.describe 'Api/Appointments', type: :request do
 
   it 'returns appointments in the future only for past=0 param' do
     # create 2 doctors, each doctor has 2 patients, each patient has 4 appointments, two appointment is in the past and two in the future
-    2.times do
-      doctor = FactoryBot.create(:doctor)
-      2.times do
-        patient = doctor.patients.create(name: Faker::Name.unique.name)
-        2.times do
-          patient.appointments.create(patient: patient, doctor: doctor, duration_in_minutes: 50, start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now))
-        end
-        2.times do
-          patient.appointments.create(patient: patient, doctor: doctor, duration_in_minutes: 50, start_time: Faker::Time.between(from: 5.days.ago, to: 2.day.ago))
-        end
-      end
-    end
 
     get '/api/appointments?past=0'
     expect(response).to have_http_status(:ok)
@@ -74,19 +62,6 @@ RSpec.describe 'Api/Appointments', type: :request do
   end
 
   it 'returns appointments in the past only for past=1 param' do
-    2.times do
-      doctor = FactoryBot.create(:doctor)
-      2.times do
-        patient = doctor.patients.create(name: Faker::Name.unique.name)
-        2.times do
-          patient.appointments.create(patient: patient, doctor: doctor, duration_in_minutes: 50, start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now))
-        end
-        2.times do
-          patient.appointments.create(patient: patient, doctor: doctor, duration_in_minutes: 50, start_time: Faker::Time.between(from: 5.days.ago, to: 2.day.ago))
-        end
-      end
-    end
-
     get '/api/appointments?past=1'
     expect(response).to have_http_status(:ok)
     # sort appointments by start_time and check if first appointment is in the past
@@ -94,19 +69,6 @@ RSpec.describe 'Api/Appointments', type: :request do
   end
 
   it 'returns 5 appointments from first page' do
-    2.times do
-      doctor = FactoryBot.create(:doctor)
-      2.times do
-        patient = doctor.patients.create(name: Faker::Name.unique.name)
-        2.times do
-          patient.appointments.create(patient: patient, doctor: doctor, duration_in_minutes: 50, start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now))
-        end
-        2.times do
-          patient.appointments.create(patient: patient, doctor: doctor, duration_in_minutes: 50, start_time: Faker::Time.between(from: 5.days.ago, to: 2.day.ago))
-        end
-      end
-    end
-
     get '/api/appointments?page=1&length=5'
     expect(response).to have_http_status(:ok)
     expect(JSON.parse(response.body).length).to eq(5)
@@ -114,19 +76,6 @@ RSpec.describe 'Api/Appointments', type: :request do
   end
 
   it 'returns 1 appointment from fourth page' do
-    2.times do
-      doctor = FactoryBot.create(:doctor)
-      2.times do
-        patient = doctor.patients.create(name: Faker::Name.unique.name)
-        2.times do
-          patient.appointments.create(patient: patient, doctor: doctor, duration_in_minutes: 50, start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now))
-        end
-        2.times do
-          patient.appointments.create(patient: patient, doctor: doctor, duration_in_minutes: 50, start_time: Faker::Time.between(from: 5.days.ago, to: 2.day.ago))
-        end
-      end
-    end
-
     get '/api/appointments?page=4&length=1'
     expect(response).to have_http_status(:ok)
     expect(JSON.parse(response.body).length).to eq(1)
@@ -143,10 +92,8 @@ RSpec.describe 'Api/Appointments', type: :request do
       duration_in_minutes: 50,
       start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now)
     }
-
     expect(response).to have_http_status(:created)
-    expect(Appointment.count).to eq(1)
-    expect(Appointment.first.patient).to eq(patient)
+    expect(JSON.parse(response.body)['id']).to eq(Appointment.last.id)
   end
 
   it 'returns error if doctor does not exists' do
