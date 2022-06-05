@@ -7,7 +7,7 @@ module Api
     def index
       @appointments = ::GetAppointments.new(Appointment.all).call(find_appointments_params)
 
-      # if @appointments is an error hash, return it
+      # if @appointments is an hash, it means there was an error
       if @appointments.is_a?(Hash)
         render json: @appointments, status: :bad_request
       else
@@ -24,11 +24,11 @@ module Api
 
       # find patient by name and return error if not found
       @patient = Patient.find_by(name: @patient_name)
-      render json: { message: 'Patient not found' }, status: :not_found and return if @patient.nil?
+      render json: { message: 'Patient not found' }, status: :bad_request and return if @patient.nil?
 
       # find doctor by id and return error if not found
       @doctor = Doctor.find_by(id: @doctor_id)
-      render json: { message: 'Doctor not found' }, status: :not_found and return if @doctor.nil?
+      render json: { message: 'Doctor not found' }, status: :bad_request and return if @doctor.nil?
 
       # create new appointment
       @new_appointment = Appointment.new(

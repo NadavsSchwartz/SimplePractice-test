@@ -1,8 +1,5 @@
 # TODO: Seed the database according to the following requirements:
 
-
- 
-
 10.times do
   # # - There should be 10 Doctors with unique names
   doctor = Doctor.create(name: Faker::Name.unique.name)
@@ -16,18 +13,18 @@
         # - Each appointment should be 50 minutes in duration
         duration_in_minutes: 50,
         doctor_id: doctor.id,
-        patient_id: patient.id,
+        patient_id: patient.id
       )
     end
     # - Each patient should have 5 appointments  5 in the past
-      5.times do
-        patient.appointments.create(
-          start_time: Faker::Time.between(from: 20.days.ago, to: 5.days.ago),
-          # - Each appointment should be 50 minutes in duration
-          duration_in_minutes: 50,
-		  doctor_id: doctor.id,
-		  patient_id: patient,
-        )
-      end
+    5.times do
+      patient.appointments.create(
+        start_time: Faker::Time.between(from: 20.days.ago, to: 5.days.ago),
+        # - Each appointment should be 50 minutes in duration
+        duration_in_minutes: 50,
+        doctor_id: doctor.id,
+        patient_id: patient
+      )
     end
   end
+end
