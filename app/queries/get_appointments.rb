@@ -25,19 +25,15 @@ class GetAppointments
 
   private def get_all_appointments_paginated(scoped, page = nil, length = nil)
     # if only one of page or length params exists, return error
-    { error: 'page and length must be present together' } if page.nil? ^ length.nil?
-    # if both page and length params exist but not valid, return error
-    if page && length
-      if page.to_i < 0 || length.to_i < 0
-        { error: 'page and length must be positive integers' }
+    return { error: 'page and length must be present together' } if page.nil? ^ length.nil?
 
-      # if both page and length params exist and are valid, return paginated appointments
-      else
-        scoped.limit(length).offset(page.to_i * length.to_i)
-      end
-    else
-      # if neither page or length params exist, return all appointments
-      scoped
-    end
+    # if both page and length params exist but are not integers bigger than 0, return error
+    return { error: 'page and length must be integers bigger than 0' } if page && page.to_i <= 0 || length && length.to_i <= 0
+
+    # if both page and length params exist and are valid, return paginated appointments
+    return scoped.limit(length).offset((page.to_i - 1) * length.to_i) if page && length
+
+    #   # if neither page or length params exist, return all appointments
+    scoped
   end
 end
