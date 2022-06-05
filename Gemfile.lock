@@ -65,6 +65,10 @@ GEM
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
     crass (1.0.6)
+    database_cleaner-active_record (2.0.1)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     deep_merge (1.2.2)
     diff-lcs (1.5.0)
     dotenv (2.7.6)
@@ -213,6 +217,7 @@ DEPENDENCIES
   bootsnap (>= 1.4.2)
   byebug
   config
+  database_cleaner-active_record
   dotenv-rails
   factory_bot_rails
   faker
