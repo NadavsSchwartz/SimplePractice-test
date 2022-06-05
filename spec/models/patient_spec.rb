@@ -11,4 +11,11 @@ RSpec.describe Patient do
     expect { FactoryBot.create(:patient, name: patient.name) }
       .to raise_error(ActiveRecord::RecordInvalid)
   end
+
+  it 'patient should have 10 appointments, 5 in the past, 5 in the future' do
+    patient = Patient.first
+    expect(patient.appointments.count).to eq(10)
+    expect(patient.appointments.where('start_time < ?', Time.now).count).to eq(5)
+    expect(patient.appointments.where('start_time > ?', Time.now).count).to eq(5)
+  end
 end
