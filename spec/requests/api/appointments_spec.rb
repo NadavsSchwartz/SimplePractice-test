@@ -132,4 +132,74 @@ RSpec.describe 'Api/Appointments', type: :request do
     expect(JSON.parse(response.body).length).to eq(1)
     expect(JSON.parse(response.body)[0]['id']).to eq(Appointment.fourth.id)
   end
+
+  it 'creates a new appointment if all params are valid' do
+    doctor = FactoryBot.create(:doctor)
+    patient = doctor.patients.create(name: Faker::Name.unique.name)
+
+    post '/api/appointments', params: {
+      patient: { name: patient.name },
+      doctor: { id: doctor.id },
+      duration_in_minutes: 50,
+      start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now)
+    }
+    puts response.body
+    expect(response).to have_http_status(:created)
+    expect(Appointment.count).to eq(1)
+    expect(Appointment.first.patient).to eq(patient)
+  end
+
+  it 'returns error if doctor does not exists' do
+    patient = FactoryBot.create(:patient)
+
+    post '/api/appointments', params: {
+      patient: { name: patient.name },
+      doctor: { id: 'invalid' },
+      duration_in_minutes: 50,
+      start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now)
+    }
+    expect(response).to have_http_status(:bad_request)
+    expect(JSON.parse(response.body)['message']).to eq('Doctor not found')
+  end
+
+  it 'returns error if patient does not exists' do
+    doctor = FactoryBot.create(:doctor)
+
+    post '/api/appointments', params: {
+      patient: { name: 'invalid' },
+      doctor: { id: doctor.id },
+      duration_in_minutes: 50,
+      start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now)
+    }
+    expect(response).to have_http_status(:bad_request)
+    expect(JSON.parse(response.body)['message']).to eq('Patient not found')
+  end
+
+  it 'returns error if start_time is not valid' do
+    doctor = FactoryBot.create(:doctor)
+    patient = doctor.patients.create(name: Faker::Name.unique.name)
+
+    post '/api/appointments', params: {
+      patient: { name: patient.name },
+      doctor: { id: doctor.id },
+      duration_in_minutes: 50,
+      start_time: 'invalid'
+    }
+    expect(response).to have_http_status(:bad_request)
+    expect(JSON.parse(response.body)['message']).to eq("Start time can't be blank, Start time must be a valid date format")
+  end
+
+  it 'returns error if duration_in_minutes is not valid' do
+    doctor = FactoryBot.create(:doctor)
+    patient = doctor.patients.create(name: Faker::Name.unique.name)
+
+    post '/api/appointments', params: {
+      patient: { name: patient.name },
+      doctor: { id: doctor.id },
+      duration_in_minutes: 10,
+      start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now)
+    }
+    expect(response).to have_http_status(:bad_request)
+    expect(JSON.parse(response.body)['message']).to eq('Duration in minutes must be 50 minutes')
+  end
 end
