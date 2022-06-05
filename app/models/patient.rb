@@ -6,4 +6,5 @@ class Patient < ApplicationRecord
   # has_one :doctor
   belongs_to :doctor
   has_many :appointments
+
 end

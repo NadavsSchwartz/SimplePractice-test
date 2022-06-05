@@ -33,7 +33,7 @@ class GetAppointments
     # if both page and length params exist and are valid, return paginated appointments
     return scoped.limit(length).offset((page.to_i - 1) * length.to_i) if page && length
 
-    #   # if neither page or length params exist, return all appointments
+    # if neither page or length params exist, return all appointments
     scoped
   end
 end

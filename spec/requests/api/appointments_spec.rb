@@ -143,7 +143,7 @@ RSpec.describe 'Api/Appointments', type: :request do
       duration_in_minutes: 50,
       start_time: Faker::Time.between(from: 2.days.from_now, to: 5.days.from_now)
     }
-    puts response.body
+
     expect(response).to have_http_status(:created)
     expect(Appointment.count).to eq(1)
     expect(Appointment.first.patient).to eq(patient)
