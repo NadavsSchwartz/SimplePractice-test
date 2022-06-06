@@ -111,4 +111,23 @@
 To ensure a smooth flow of data and efficiency, we should utilize open-source well-tested gems.
 However, since I was asked not to utilize outside gems, I have implemented validations for multiple edge cases.
   
+ ## Evaluation Criteria:
+ * `Does it run?`: 
+Yes, It runs according to the requirements!
+
+ * `Does it produce the correct output?`: 
+Although the requirements were vague, I tried my best to get the correct output for each requirement!
  
+ * `How did _you_ gain confidence your submission is correct?`: 
+I tested manually and wrote tests to validate the required output, to ensure the steps I took for each requirement were met.
+ 
+ * `Were appropriate algorithms and data structures chosen?`: 
+I tried to utilize the "fat model, skinny controller" way of rails for the most part. I tried to put as much validation in separate classes or the respective model so that the controller could stay "skinny". Although - There's always room for improvement!
+ 
+ * `Was it well written? Are the source code and algorithms implemented cleanly?`: 
+I added a short description of each method and its intended use and declarative method names for a more straightforward approach. However, I believe it was well written.
+ 
+ * `Would we enjoy your code living along side our own?`: I hope so!
+
+ * `Is it slow? For small to medium sized inputs, the processing delay should probably not be noticeable.`: 
+It's hard to say how optimized it is with small-sized data. I tested the app with multiple seed sizes of up to 50,000 appointments and different methods of returning data. The differences between the methods I tested were negligible. However, for bigger sized input, it'll be beneficial to implement strategies like batches and other performance optimizations where needed - depending on the context of where and what is needed
